@@ -70,7 +70,7 @@ static const CGFloat    maxStrokeEnd    = 0.80;     // 旋转图层的最大值
     if (!isRefresh) {
         
         isRefresh   = YES;
-        self.headerLabel.text   = @"正在加载···";
+        self.headerLabel.text   = @"正在加载 ~";
         refreshStatues  = QHLRefreshStatuesLoading;
         self.revolveLayer.strokeEnd = maxStrokeEnd;
         [self startAnimation];
@@ -99,15 +99,49 @@ static const CGFloat    maxStrokeEnd    = 0.80;     // 旋转图层的最大值
 
 - (void)startAnimation {
     
+    CAMediaTimingFunction   *timeFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    
     CABasicAnimation *rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
     rotationAnimation.fromValue  = [NSNumber numberWithFloat:0.0];
     rotationAnimation.toValue    = [NSNumber numberWithFloat:M_PI * 2];
-    rotationAnimation.duration      = 0.4;
-    rotationAnimation.repeatCount   = INFINITY;
-    rotationAnimation.removedOnCompletion = NO;
-    rotationAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+    rotationAnimation.duration          = 2.5;
+    rotationAnimation.repeatCount       = INFINITY;
+    rotationAnimation.timingFunction    = timeFunction;
     
-    [self.revolveLayer addAnimation:rotationAnimation forKey:@"Refreshing"];
+    [self.revolveLayer   addAnimation:rotationAnimation forKey:@"rotationZ"];
+    
+    CABasicAnimation  *headerStrokeStart    = [CABasicAnimation animationWithKeyPath:@"strokeStart"];
+    headerStrokeStart.duration  = 0.8;
+    headerStrokeStart.fromValue = @0.0;
+    headerStrokeStart.toValue   = @0.25;
+    headerStrokeStart.timingFunction    = timeFunction;
+    
+    CABasicAnimation  *headerStrokeEnd    = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
+    headerStrokeEnd.duration  = 0.8;
+    headerStrokeEnd.fromValue = @0.0;
+    headerStrokeEnd.toValue   = @1.0;
+    headerStrokeEnd.timingFunction    = timeFunction;
+    
+    CABasicAnimation  *tailStrokeStart    = [CABasicAnimation animationWithKeyPath:@"strokeStart"];
+    tailStrokeStart.beginTime = 0.8;
+    tailStrokeStart.duration  = 0.4;
+    tailStrokeStart.fromValue = @0.25;
+    tailStrokeStart.toValue   = @1.0;
+    tailStrokeStart.timingFunction    = timeFunction;
+    
+    CABasicAnimation  *tailStrokeEnd    = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
+    tailStrokeEnd.beginTime = 0.8;
+    tailStrokeEnd.duration  = 0.4;
+    tailStrokeEnd.fromValue = @1.0;
+    tailStrokeEnd.toValue   = @1.0;
+    tailStrokeEnd.timingFunction    = timeFunction;
+    
+    CAAnimationGroup    *animations = [CAAnimationGroup animation];
+    animations.duration     = 1.2;
+    animations.repeatCount  = INFINITY;
+    animations.animations   = @[headerStrokeStart, headerStrokeEnd, tailStrokeStart, tailStrokeEnd];
+    
+    [self.revolveLayer addAnimation:animations forKey:@"Refreshing"];
 }
 
 - (void)finishAnimation {
@@ -159,7 +193,7 @@ static const CGFloat    maxStrokeEnd    = 0.80;     // 旋转图层的最大值
                     
                 case QHLRefreshStatuesLoading: {
                 
-                    self.headerLabel.text   = @"正在加载···";
+                    self.headerLabel.text   = @"正在加载 ~";
                     [self startRefreshing];
                     break;
                 }

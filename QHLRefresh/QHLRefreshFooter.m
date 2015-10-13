@@ -75,7 +75,7 @@ static const CGFloat    footRefreshHeight   = 36.0;
                                                            scrollFrameHeight,
                                                            footRefreshHeight);
                 
-                if (currentOffsetY + scrollFrameHeight > (contentSizeHeight + footRefreshHeight * 0.5)
+                if (currentOffsetY + scrollFrameHeight > contentSizeHeight
                     && contentSizeHeight >= scrollFrameHeight) {
                     
                     isLoading  = YES;
@@ -176,7 +176,8 @@ static const CGFloat    footRefreshHeight   = 36.0;
 - (void)setIsMore:(BOOL)isMore {
 
     _isMore = isMore;
-    if (isMore) {
+    if (isMore
+        && (self.refreshScrollView.contentSize.height >= self.refreshScrollView.frame.size.height)) {
         
         self.footTitleLabel.hidden  = YES;
         self.activityView.color     = [UIColor grayColor];
